@@ -12,7 +12,7 @@ use crate::{partial_tree::PartialTree, utils, utils::indices, Hasher, MerkleProo
 #[derive(Clone)]
 pub struct MerkleTree<T: Hasher> {
     current_working_tree: PartialTree<T>,
-    history: Vec<T::Hash>,
+    pub history: Vec<T::Hash>,
     uncommitted_leaves: Vec<T::Hash>,
 }
 
