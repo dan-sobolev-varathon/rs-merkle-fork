@@ -179,20 +179,6 @@ pub mod commit {
             merkle_tree.root_hex(),
             Some("09b6890b23e32e607f0e5f670ab224e36af8f6599cbe88b468f4b0f761802dd6".to_string())
         );
-
-        // Rolling back to the previous state
-        merkle_tree.rollback();
-        assert_eq!(
-            merkle_tree.root_hex(),
-            Some("e2a80e0e872a6c6eaed37b4c1f220e1935004805585b5f99617e48e9c8fe4034".to_string())
-        );
-
-        // We can rollback multiple times as well
-        merkle_tree.rollback();
-        assert_eq!(
-            merkle_tree.root_hex(),
-            Some("1f7379539707bcaea00564168d1d4d626b09b73f8a2a365234c62d763f854da2".to_string())
-        );
     }
 }
 
@@ -257,22 +243,6 @@ pub mod rollback {
         assert_eq!(
             merkle_tree.root_hex(),
             Some("09b6890b23e32e607f0e5f670ab224e36af8f6599cbe88b468f4b0f761802dd6".to_string())
-        );
-
-        merkle_tree.rollback();
-
-        // Check that we rolled one commit back
-        assert_eq!(
-            merkle_tree.root_hex(),
-            Some("e2a80e0e872a6c6eaed37b4c1f220e1935004805585b5f99617e48e9c8fe4034".to_string())
-        );
-
-        merkle_tree.rollback();
-
-        // Rolling back to the state after the very first commit
-        assert_eq!(
-            merkle_tree.root_hex(),
-            Some("1f7379539707bcaea00564168d1d4d626b09b73f8a2a365234c62d763f854da2".to_string())
         );
     }
 }

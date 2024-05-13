@@ -12,7 +12,7 @@ use crate::{partial_tree::PartialTree, utils, utils::indices, Hasher, MerkleProo
 #[derive(Clone)]
 pub struct MerkleTree<T: Hasher> {
     current_working_tree: PartialTree<T>,
-    history: Vec<PartialTree<T>>,
+    history: Vec<T::Hash>,
     uncommitted_leaves: Vec<T::Hash>,
 }
 
@@ -310,53 +310,9 @@ impl<T: Hasher> MerkleTree<T> {
     /// ```
     pub fn commit(&mut self) {
         if let Some(diff) = self.uncommitted_diff() {
-            self.history.push(diff.clone());
             self.current_working_tree.merge_unverified(diff);
+            self.history.push(self.root().unwrap());
             self.uncommitted_leaves.clear();
-        }
-    }
-
-    /// Rolls back one commit and reverts the tree to the previous state.
-    /// Removes the most recent commit from the history.
-    ///
-    /// ## Examples
-    ///
-    /// ```
-    /// # use rs_merkle::{MerkleTree, MerkleProof, algorithms::Sha256, Hasher, Error, utils};
-    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let mut merkle_tree = MerkleTree::<Sha256>::new();
-    ///
-    /// merkle_tree.insert(Sha256::hash("a".as_bytes())).commit();
-    /// assert_eq!(
-    ///     merkle_tree.root_hex(),
-    ///     Some("ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb".to_string())
-    /// );
-    ///
-    /// merkle_tree.insert(Sha256::hash("b".as_bytes())).commit();
-    /// assert_eq!(
-    ///     merkle_tree.root_hex(),
-    ///     Some("e5a01fee14e0ed5c48714f22180f25ad8365b53f9779f79dc4a3d7e93963f94a".to_string())
-    /// );
-    ///
-    /// // Rollback to the previous state
-    /// merkle_tree.rollback();
-    /// assert_eq!(
-    ///     merkle_tree.root_hex(),
-    ///     Some("ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb".to_string())
-    /// );
-    /// # Ok(())
-    /// # }
-    /// ```
-    pub fn rollback(&mut self) {
-        // Remove the most recent commit
-        self.history.pop();
-        // Clear working tree
-        self.current_working_tree.clear();
-        // Applying all the commits up to the removed one. This is not an
-        // efficient way of doing things, but the diff subtraction is not implemented yet on
-        // PartialMerkleTree
-        for commit in &self.history {
-            self.current_working_tree.merge_unverified(commit.clone());
         }
     }
 
