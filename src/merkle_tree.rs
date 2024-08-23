@@ -9,6 +9,8 @@ use crate::{partial_tree::PartialTree, utils, utils::indices, Hasher, MerkleProo
 /// Advanced features include being able to make transactional changes to a tree with being able to
 /// roll back to any previously committed state of the tree. This scenario is similar to Git and
 /// can be found in databases and file systems.
+
+use std::collections::HashSet;
 #[derive(Clone)]
 pub struct MerkleTree<T: Hasher> {
     current_working_tree: PartialTree<T>,
