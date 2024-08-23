@@ -12,7 +12,7 @@ use crate::{partial_tree::PartialTree, utils, utils::indices, Hasher, MerkleProo
 #[derive(Clone)]
 pub struct MerkleTree<T: Hasher> {
     current_working_tree: PartialTree<T>,
-    pub history: Vec<T::Hash>,
+    pub history: HashSet<T::Hash>,
     uncommitted_leaves: Vec<T::Hash>,
 }
 
@@ -37,7 +37,7 @@ impl<T: Hasher> MerkleTree<T> {
     pub fn new() -> Self {
         Self {
             current_working_tree: PartialTree::new(),
-            history: Vec::new(),
+            history: HashSet::new(),
             uncommitted_leaves: Vec::new(),
         }
     }
@@ -311,7 +311,7 @@ impl<T: Hasher> MerkleTree<T> {
     pub fn commit(&mut self) {
         if let Some(diff) = self.uncommitted_diff() {
             self.current_working_tree.merge_unverified(diff);
-            self.history.push(self.root().unwrap());
+            self.history.insert(self.root().unwrap());
             self.uncommitted_leaves.clear();
         }
     }
